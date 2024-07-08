@@ -68,7 +68,7 @@ Resources:
       CodeUri: ./dist
       Runtime: nodejs18.x
       FunctionName: tikkie-be-deploy-lambda
-      Handler: lambda.handler
+      Handler: lamda.handler
       Timeout: 600
       Role: !GetAtt IAMRoleForLambda.Arn
       MemorySize: 512
