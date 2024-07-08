@@ -65,7 +65,7 @@ Resources:
   TikkieAssignment:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./
+      CodeUri: ./dist
       Runtime: nodejs18.x
       FunctionName: tikkie-be-deploy-lambda
       Handler: lambda.handler
@@ -87,7 +87,7 @@ Resources:
   MyAuthFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./
+      CodeUri: ./dist
       Handler: authorizer.handler
       Runtime: nodejs18.x
       Environment:
