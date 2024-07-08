@@ -1,0 +1,104 @@
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  authKey:
+    Type: String
+Resources:
+  IAMRoleForLambda:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Sid: "Statement1"
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: tikkie-assignment-lambda-policy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Sid: "Statement1"
+                Action: 
+                  - "logs:*"
+                  - "dynamodb:*"
+                  - "s3:*"
+                  - "iam:*"
+                  - "lambda:*"
+                  - "apigateway:*"
+                  - "cloudformation:*"
+                  - "kms:*"
+                  - "sns:*"
+                Resource: "*"
+  
+  ApiDeployment:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: tikkie-prod
+      Cors:
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: MyLambdaTokenAuthorizer
+        Authorizers:
+          MyLambdaTokenAuthorizer:
+            FunctionArn: !GetAtt MyAuthFunction.Arn
+            Identity:
+              Header: Authorization
+        AddDefaultAuthorizerToCorsPreflight: false
+      GatewayResponses:
+        DEFAULT_4XX:
+          ResponseParameters:
+            Headers:
+              Access-Control-Allow-Origin: "'*'"
+              Cache-Control: "'no-cache'"
+        DEFAULT_INTERNAL:
+          StatusCode: 200
+          ResponseParameters:
+            Headers:
+              Access-Control-Allow-Origin: "'*'"
+              Cache-Control: "'no-cache'"
+  
+  NnAssignment:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Runtime: nodejs18.x
+      FunctionName: nn-be-deploy-lambda
+      Handler: lambda.handler
+      Timeout: 600
+      Role: !GetAtt IAMRoleForLambda.Arn
+      MemorySize: 512
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+            RestApiId: !Ref ApiDeployment
+      Environment:
+        Variables:
+          authKey: !Ref authKey
+    DependsOn: IAMRoleForLambda
+  
+  MyAuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: authorizer.handler
+      Runtime: nodejs18.x
+      Environment:
+        Variables:
+          authKey: !Ref authKey
+    DependsOn: IAMRoleForLambda
+
+Outputs:
+  Region:
+    Value: !Ref AWS::Region
+    Description: Region of the API
+  ApiUrl:
+    Value: !Sub 'https://${ApiDeployment}.execute-api.${AWS::Region}.amazonaws.com/tikkie-prod/'
+    Description: URL of the API

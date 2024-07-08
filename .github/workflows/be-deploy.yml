@@ -1,0 +1,46 @@
+name: tikkie-be-deploy
+on:
+  push:
+    branches:
+      - main
+env:
+  environment     : Development
+  role-to-assume  : ${{ secrets.AWSROLETOASSUME }}
+  AWS_REGION      : eu-central-1
+  s3_bucket       : ${{ vars.S3BUCKET }}
+  authKey         : ${{ secrets.AUTHKEY }}
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  build-tikkie-be:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup Sam
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWSROLETOASSUME }}
+          aws-region: eu-central-1
+      - name: Delete existing stack if in failed state
+        run: |
+          STACK_NAME="tikkie-be-deploy-stack"
+          REGION="eu-central-1"
+          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION --query "Stacks[0].StackStatus" --output text || echo "STACK_NOT_FOUND")
+          if [[ "$STACK_STATUS" == "ROLLBACK_FAILED" || "$STACK_STATUS" == "ROLLBACK_COMPLETE" ]]; then
+            echo "Deleting failed stack: $STACK_NAME"
+            aws cloudformation delete-stack --stack-name $STACK_NAME --region $REGION
+            echo "Waiting for stack deletion to complete..."
+            aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region $REGION
+          fi
+      - name: Sam Build
+        run:  sam build --template tikkie-deploy.yml
+      - name: Sam Package
+        run:  sam package --output-template-file tikkie-be-deploy-lambda.yml --s3-bucket $s3_bucket --region eu-central-1
+      - name: Sam Deploy
+        run:  sam deploy --template-file tikkie-be-deploy-lambda.yml --stack-name tikkie-be-deploy-stack --parameter-overrides authKey=$authKey --s3-bucket $s3_bucket --capabilities CAPABILITY_NAMED_IAM --region eu-central-1 --no-fail-on-empty-changeset
