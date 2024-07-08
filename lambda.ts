@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import awsServerlessExpress from 'aws-serverless-express';
-import Service from './service'; // Adjust the import path as per your project structure
+import Service from './service';
 
 const service = new Service();
 const server = awsServerlessExpress.createServer(service.expressApp);
