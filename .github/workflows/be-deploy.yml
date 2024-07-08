@@ -39,7 +39,7 @@ jobs:
             aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME --region $REGION
           fi
       - name: Convert TS to JS
-        run:  tsc
+        run:  yarn tsc
       - name: Sam Build
         run:  sam build --template tikkie-deploy.yml
       - name: Sam Package
