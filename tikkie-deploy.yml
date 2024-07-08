@@ -68,7 +68,7 @@ Resources:
       CodeUri: ./dist
       Runtime: nodejs18.x
       FunctionName: tikkie-be-deploy-lambda
-      Handler: lambda.handler
+      Handler: dist/lambda.handler
       Timeout: 600
       Role: !GetAtt IAMRoleForLambda.Arn
       MemorySize: 512
@@ -88,7 +88,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./dist
-      Handler: authorizer.handler
+      Handler: dist/authorizer.handler
       Runtime: nodejs18.x
       Environment:
         Variables:
