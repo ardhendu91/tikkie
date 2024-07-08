@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handler = void 0;
 const aws_serverless_express_1 = __importDefault(require("aws-serverless-express"));
-const service_1 = __importDefault(require("./service")); // Adjust the import path as per your project structure
+const service_1 = __importDefault(require("./service"));
 const service = new service_1.default();
 const server = aws_serverless_express_1.default.createServer(service.expressApp);
 const handler = (event, context) => __awaiter(void 0, void 0, void 0, function* () {
