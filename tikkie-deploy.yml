@@ -62,12 +62,12 @@ Resources:
               Access-Control-Allow-Origin: "'*'"
               Cache-Control: "'no-cache'"
   
-  NnAssignment:
+  TikkieAssignment:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./
       Runtime: nodejs18.x
-      FunctionName: nn-be-deploy-lambda
+      FunctionName: tikkie-be-deploy-lambda
       Handler: lambda.handler
       Timeout: 600
       Role: !GetAtt IAMRoleForLambda.Arn
