@@ -7,12 +7,11 @@ class personController {
         try {
             const result = await personService.trial(req);
             // Response.create("ServerData").setData(result).send(res);
-            res.send( {
+            res.status(200).send( 
                 
-                "statusCode": 200,
-                "headers": {},
-                "body": JSON.stringify(result)
-                })
+                result
+                )
+
         } catch (err) {
             console.error('Some error occurred!', err);
             next(err); // Pass the error to the next error handler middleware
