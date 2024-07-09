@@ -20,15 +20,16 @@ app.use((req: Request, res: ExpressResponse, next: NextFunction) => {
     const requestId = uuidv4();
     const requestUrl = req.url;
 
-    res.end = ((...args: any) => {
-        try {
-            console.log(`[END REQ] ${req.method}-${requestUrl} - duration: ${new Date().getTime() - cls.get('requestTime')} ms`);
-            originalEnd.apply(this, args); // Call original end with proper context
-        } catch (err) {
-            console.error('Error in res.end override:', err);
-            res.status(500).send('Internal Server Error');
-        }
-    }) as typeof res.end;
+    // res.end = ((...args: any) => {
+    //     try {
+    //         console.log(`[END REQ] ${req.method}-${requestUrl} - duration: ${new Date().getTime() - cls.get('requestTime')} ms`);
+    //         // originalEnd.apply(this, args); // Call original end with proper context
+    //         return args
+    //     } catch (err) {
+    //         console.error('Error in res.end override:', err);
+    //         res.status(500).send('Internal Server Error');
+    //     }
+    // }) as typeof res.end;
 
     cls.set('requestId', requestId);
     cls.set('language', lang);
