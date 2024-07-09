@@ -17,6 +17,7 @@ app.use((0, cors_1.default)());
 app.use(express_http_context_1.default.middleware);
 app.use((req, res, next) => {
     const lang = req.headers['accept-language'] ? req.headers['accept-language'] : 'en';
+    console.log(JSON.stringify(req));
     const originalEnd = res.end;
     const requestId = (0, uuid_1.v4)();
     const requestUrl = req.url;

@@ -13,10 +13,13 @@ class Response {
         return new Response(msg);
     }
     setData(data) {
+        console.log('data-->', data);
         this.data = data;
+        console.log('this-->', this);
         return this;
     }
     send(res, status) {
+        console.log('this send-->', this);
         res.status(status || 200).json(this);
     }
 }
