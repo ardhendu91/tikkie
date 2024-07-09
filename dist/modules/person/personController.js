@@ -13,13 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const personService_1 = __importDefault(require("./personService"));
+const response_1 = __importDefault(require("../../common/response"));
 class personController {
     static trial(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield personService_1.default.trial(req);
-                // Response.create("ServerData").setData(result).send(res);
-                res.status(200).send(result);
+                response_1.default.create("ServerData").setData(result).send(res);
+                // res.status(200).send( 
+                //     result
+                //     )
             }
             catch (err) {
                 console.error('Some error occurred!', err);
