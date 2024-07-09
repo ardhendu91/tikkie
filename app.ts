@@ -1,35 +1,24 @@
-import express, { Request, Response as ExpressResponse, NextFunction } from 'express';
-import cls from 'express-http-context';
-import cors from 'cors';
-import { v4 as uuidv4 } from 'uuid';
-import helmet from 'helmet';
-import bodyParser from 'body-parser';
-import Response from './common/response';
-import mainrouter from './modules/mainrouter';
+const app = require('express')(); // Importing the Express module and creating an Express application instance
+const cls = require('express-http-context'); //maintain state across asynchronous operation
+const cors = require('cors'); //handles requests from multiple origins
+const { v4: uuidv4 } = require('uuid');
+const helmet = require('helmet'); //help secure express apps by including various headers
+const response = require('./common/response');
+const bodyParser = require('body-parser');
 
-const app = express(); // Creating an Express application instance
-
-app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.json({limit: '50mb'}));
 app.use(cors());
 app.use(cls.middleware);
-
-app.use((req: Request , res: ExpressResponse , next: NextFunction) => {
-    const lang = req.headers['accept-language'] ? req.headers['accept-language'] : 'en';
-    // console.log(JSON.stringify(req));
-    const originalEnd = res.end;
-    const requestId = uuidv4();
+app.use((req : any, res: any, next: any) =>{
+    const lang = req.headers['Accept-Language'] ? req.headers[ 'Accept-Language'] : 'en';
+    const Originalend = res.end;
+    const requestId = uuidv4;
     const requestUrl = req.url;
 
-    // res.end = ((...args: any) => {
-    //     try {
-    //         console.log(`[END REQ] ${req.method}-${requestUrl} - duration: ${new Date().getTime() - cls.get('requestTime')} ms`);
-    //         originalEnd.apply(res, args); // Call original end with proper context
-    //         // return args
-    //     } catch (err) {
-    //         console.error('Error in res.end override:', err);
-    //         res.status(500).send('Internal Server Error');
-    //     }
-    // });
+    res.end = function requestEndOverride(...args: any){
+        console.log(`[END REQ] ${this.req.method}-${requestUrl} - duration: ${new Date().getTime() - cls.get('requestTime')} ms`);
+        Originalend.apply(this, args);
+    };
 
     cls.set('requestId', requestId);
     cls.set('language', lang);
@@ -39,11 +28,11 @@ app.use((req: Request , res: ExpressResponse , next: NextFunction) => {
 });
 
 app.use(helmet());
-app.use('/', mainrouter);
+app.use('/', require('./modules/mainrouter'));
 
-function errorHandler(err: any, req: Request, res: ExpressResponse, next: NextFunction) {
+function errorHandler(err: any, req: any, res: any, next: any){
     console.error(`Error encountered : ${err.message}`);
-    Response.create(err.message).setData(err.details).send(res, err.status || 500);
+    response.create(err.message).setData(err.details).send(res, err.status || 500);
     next();
 }
 
