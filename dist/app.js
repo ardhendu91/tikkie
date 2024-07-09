@@ -24,7 +24,7 @@ app.use((req, res, next) => {
     res.end = ((...args) => {
         try {
             console.log(`[END REQ] ${req.method}-${requestUrl} - duration: ${new Date().getTime() - express_http_context_1.default.get('requestTime')} ms`);
-            originalEnd.apply(res, args); // Call original end with proper context
+            originalEnd.apply(this, args); // Call original end with proper context
         }
         catch (err) {
             console.error('Error in res.end override:', err);

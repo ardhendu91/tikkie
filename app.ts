@@ -23,7 +23,7 @@ app.use((req: Request, res: ExpressResponse, next: NextFunction) => {
     res.end = ((...args: any) => {
         try {
             console.log(`[END REQ] ${req.method}-${requestUrl} - duration: ${new Date().getTime() - cls.get('requestTime')} ms`);
-            originalEnd.apply(res, args); // Call original end with proper context
+            originalEnd.apply(this, args); // Call original end with proper context
         } catch (err) {
             console.error('Error in res.end override:', err);
             res.status(500).send('Internal Server Error');
