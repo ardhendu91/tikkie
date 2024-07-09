@@ -21,16 +21,16 @@ app.use((req, res, next) => {
     const originalEnd = res.end;
     const requestId = (0, uuid_1.v4)();
     const requestUrl = req.url;
-    res.end = ((...args) => {
-        try {
-            console.log(`[END REQ] ${req.method}-${requestUrl} - duration: ${new Date().getTime() - express_http_context_1.default.get('requestTime')} ms`);
-            originalEnd.apply(this, args); // Call original end with proper context
-        }
-        catch (err) {
-            console.error('Error in res.end override:', err);
-            res.status(500).send('Internal Server Error');
-        }
-    });
+    // res.end = ((...args) => {
+    //     try {
+    //         console.log(`[END REQ] ${req.method}-${requestUrl} - duration: ${new Date().getTime() - express_http_context_1.default.get('requestTime')} ms`);
+    //         originalEnd.apply(this, args); // Call original end with proper context
+    //     }
+    //     catch (err) {
+    //         console.error('Error in res.end override:', err);
+    //         res.status(500).send('Internal Server Error');
+    //     }
+    // });
     express_http_context_1.default.set('requestId', requestId);
     express_http_context_1.default.set('language', lang);
     express_http_context_1.default.set('requestTime', new Date().getTime());
