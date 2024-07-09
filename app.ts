@@ -15,6 +15,7 @@ app.use(cls.middleware);
 
 app.use((req: Request, res: ExpressResponse, next: NextFunction) => {
     const lang = req.headers['accept-language'] ? req.headers['accept-language'] : 'en';
+    console.log(JSON.stringify(req));
     const originalEnd = res.end;
     const requestId = uuidv4();
     const requestUrl = req.url;

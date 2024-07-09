@@ -6,11 +6,11 @@ class personController {
     static async trial(req: Request, res: ExpressResponse, next: NextFunction): Promise<void> {
         try {
             const result = await personService.trial(req);
-            Response.create("ServerData").setData(result).send(res);
-            // res.status(200).send( 
+            // Response.create("ServerData").setData(result).send(res);
+            res.status(200).send( 
                 
-            //     result
-            //     )
+                result
+                )
 
         } catch (err) {
             console.error('Some error occurred!', err);
