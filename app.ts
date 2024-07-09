@@ -13,23 +13,23 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
 app.use(cls.middleware);
 
-app.use((req: Request, res: ExpressResponse, next: NextFunction) => {
+app.use((req: Request | any, res: ExpressResponse | any, next: NextFunction) => {
     const lang = req.headers['accept-language'] ? req.headers['accept-language'] : 'en';
     // console.log(JSON.stringify(req));
     const originalEnd = res.end;
     const requestId = uuidv4();
     const requestUrl = req.url;
 
-    // res.end = ((...args: any) => {
-    //     try {
-    //         console.log(`[END REQ] ${req.method}-${requestUrl} - duration: ${new Date().getTime() - cls.get('requestTime')} ms`);
-    //         // originalEnd.apply(this, args); // Call original end with proper context
-    //         return args
-    //     } catch (err) {
-    //         console.error('Error in res.end override:', err);
-    //         res.status(500).send('Internal Server Error');
-    //     }
-    // }) as typeof res.end;
+    res.end = ((...args: any) => {
+        try {
+            console.log(`[END REQ] ${req.method}-${requestUrl} - duration: ${new Date().getTime() - cls.get('requestTime')} ms`);
+            originalEnd.apply(res, args); // Call original end with proper context
+            // return args
+        } catch (err) {
+            console.error('Error in res.end override:', err);
+            res.status(500).send('Internal Server Error');
+        }
+    });
 
     cls.set('requestId', requestId);
     cls.set('language', lang);
