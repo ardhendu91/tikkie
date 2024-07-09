@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 const helmet = require('helmet'); //help secure express apps by including various headers
 const response = require('./common/response');
 const bodyParser = require('body-parser');
-
+import mainrouter from './modules/mainrouter';
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(cors());
 app.use(cls.middleware);
@@ -28,7 +28,7 @@ app.use((req : any, res: any, next: any) =>{
 });
 
 app.use(helmet());
-app.use('/', require('./modules/mainrouter'));
+app.use('/', mainrouter);
 
 function errorHandler(err: any, req: any, res: any, next: any){
     console.error(`Error encountered : ${err.message}`);

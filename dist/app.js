@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const app = require('express')(); // Importing the Express module and creating an Express application instance
 const cls = require('express-http-context'); //maintain state across asynchronous operation
@@ -7,6 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 const helmet = require('helmet'); //help secure express apps by including various headers
 const response = require('./common/response');
 const bodyParser = require('body-parser');
+const mainrouter_1 = __importDefault(require("./modules/mainrouter"));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
 app.use(cls.middleware);
@@ -26,7 +30,7 @@ app.use((req, res, next) => {
     next();
 });
 app.use(helmet());
-app.use('/', require('./modules/mainrouter'));
+app.use('/', mainrouter_1.default);
 function errorHandler(err, req, res, next) {
     console.error(`Error encountered : ${err.message}`);
     response.create(err.message).setData(err.details).send(res, err.status || 500);
